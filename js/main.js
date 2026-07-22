@@ -28,14 +28,15 @@ function raf(time) {
 //브라우저 애니메이션 프레임 루프를 시작한다
 requestAnimationFrame(raf);
 
-const siteHeader = document.getElementById("site_header");
-const menuToggle = document.getElementById("menu_toggle");
-const mobilePanel = document.querySelector(".mobile_panel");
-const navLinks = document.querySelectorAll(".primary_nav a, .mobile_nav a");
+
+const siteHeader = document.getElementById('site_header');
+const menuToggle = document.getElementById('menu_toggle');
+const mobilePanel = document.querySelector('.mobile_panel');
+const navLinks = document.querySelectorAll('.primary_nav a, .mobile_nav a');
 //직전 스크롤 위치를 저장해서 방향을 비교한다
 let lastY = 0;
 
-lenis.on("scroll", ({ scroll }) => {
+lenis.on('scroll', ({ scroll }) => {
   //해더가 없으면 더 진행하지 않는다
   if (!siteHeader) return;
 
@@ -44,10 +45,10 @@ lenis.on("scroll", ({ scroll }) => {
 
   //아래로 충분히 내렸고 첫 화면을 지난 상태면 헤더를 위로 숨긴다
   if (y > lastY + 4 && y > 120) {
-    siteHeader.style.transform = "translateY(-100%)";
+    siteHeader.style.transform = 'translateY(-100%)'
   } else if (y < lastY - 4) {
     //원래 자리로 되돌린다
-    siteHeader.style.transform = "translateY(0)";
+    siteHeader.style.transform = 'translateY(0)'
   }
   //다음 비교를 위해 현재 위치를 저장
   lastY = y;
@@ -57,44 +58,42 @@ lenis.on("scroll", ({ scroll }) => {
 
 //모바일 메뉴 버튼을 누르면 메뉴 패널이 열리고 닫힌다
 if (menuToggle && mobilePanel) {
-  menuToggle.addEventListener("click", () => {
+  menuToggle.addEventListener('click', () => {
     //is_open 클래스를 켜거나 끄고, 결과를 true/false로 받는다
-    const isOpen = mobilePanel.classList.toggle("is_open");
-    menuToggle.setAttribute("aria-expanded", String(isOpen));
-  });
+    const isOpen = mobilePanel.classList.toggle('is_open');
+    menuToggle.setAttribute('aria-expanded', String(isOpen));
+  })
 }
 // 메뉴 링크를 누른 뒤에는 모바일 메뉴를 닫아 화면을 다시 넓게 보여줌
 function closeMobileMenu() {
   if (!menuToggle || !mobilePanel) return;
-  mobilePanel.classList.remove("is_open");
-  menuToggle.setAttribute("aria-expanded", "false");
+  mobilePanel.classList.remove('is_open');
+  menuToggle.setAttribute('aria-expanded', 'false');
 }
 const sectionMap = [
-  "#hero",
-  "#projects",
-  "#info",
-  "#showcase",
-  "#gallery",
-  "#stats",
-  "#contact",
+  '#hero',
+  '#projects',
+  '#info',
+  '#showcase',
+  '#gallery',
+  '#stats',
+  '#contact',
 ];
 
 //화면의 42% 지점에 가장 가까운 섹션을 현재 섹션으로 판단한다
 //맨아래 근처에서는 contact 메뉴가 끝까지 active로 보이게 따로 처리한다
 function updateActiveFromViewport() {
   //문서 맨 아래에 가까운지 확인
-  const isNearBottom =
-    window.screenY + window.innerHeight >=
-    document.documentElement.scrollHeight - 80;
+  const isNearBottom = window.screenY + window.innerHeight >= document.documentElement.scrollHeight - 80;
   //맨 아래라면 마지막 contact 메뉴를 켠다
   if (isNearBottom) {
-    setActiveByHref("#contact");
+    setActiveByHref('#contact');
     return;
   }
   //화면 위에서 42% 내려온 지점을 현재 섹션 판단 기준으로 쓴다
   const checkPoint = window.innerHeight * 0.42;
   //아직 못찾았을 때 기본 active는 hero로 둔다
-  let activeHref = "#hero";
+  let activeHref = '#hero';
   //가장 가까운 섹션을 찾기 위해 큰 숫자로 시작한다
   let activeDistance = Infinity;
 
@@ -109,12 +108,7 @@ function updateActiveFromViewport() {
     //기준점이 섹션안에 들어와 있는지 확인한다
     const isInside = rect.top <= checkPoint && rect.bottom >= checkPoint;
     //섹션 안이면 거리0, 밖이면 위/아래 경계중 더 가까운 거리로 계산한다
-    const distance = isInside
-      ? 0
-      : Math.min(
-          Math.abs(rect.top - checkPoint),
-          Math.abs(rect.bottom - checkPoint),
-        );
+    const distance = isInside ? 0 : Math.min(Math.abs(rect.top - checkPoint), Math.abs(rect.bottom - checkPoint));
 
     //이번 섹션이 지금까지 본 섹션보다 기준점에 더 가까우면 교체
     if (distance < activeDistance) {
@@ -128,7 +122,7 @@ function updateActiveFromViewport() {
   });
 }
 //페이지가 처음 열렸을때는 hero메뉴를 active로 시작한다
-setActiveByHref("#hero");
+setActiveByHref('#hero');
 
 //지금 보고 있는 섹션의 메뉴만 노란 active 스타일이 켜지게 한다
 //pc와 모바일 메뉴를 한번에 맞추려고 navLinks 전체를 돌린다
@@ -136,19 +130,19 @@ function setActiveByHref(href) {
   //모든 메뉴 링크를 하나씩 확인한다
   navLinks.forEach((link) => {
     //현재 링크의 href가 켜야할 섹션 href와 같은지 비교
-    const isSameLink = link.getAttribute("href") === href;
+    const isSameLink = link.getAttribute('href') === href;
     //같은 링크면 active를 켜고 아니면 끈다
-    link.classList.toggle("is_active", isSameLink);
-  });
+    link.classList.toggle('is_active', isSameLink);
+  })
 }
 
 //메뉴를 누르면 브라우저 기본 점프 이동을 막고 lenis로 부드럽게 이동
 navLinks.forEach((link) => {
-  link.addEventListener("click", (e) => {
+  link.addEventListener('click', (e) => {
     //브라우저 기본 앵커 점프를 막는다
     e.preventDefault();
     //클릭한 링크가 가리키는 섹션 id를 가져온다
-    const targetId = link.getAttribute("href");
+    const targetId = link.getAttribute('href');
     const targetEl = document.querySelector(targetId);
     //모바일 메뉴가 열려 있었다면 먼저 닫는다
     closeMobileMenu();
@@ -160,7 +154,7 @@ navLinks.forEach((link) => {
       //클릭 즉시 메뉴 active를 먼저 바꿔 체감 반응을 빠르게 만든다
       setActiveByHref(targetId);
     }
-  });
+  })
 });
 // 고정 헤더가 섹션 제목을 덮지 않도록 도착 위치를 조금 위로 당긴다.
 function getScrollOffset() {
@@ -168,21 +162,21 @@ function getScrollOffset() {
   return window.innerWidth <= 640 ? -80 : -68;
 }
 
+
 //첫 화면의 제목, 설명 버튼을 순서대로 등장시킨다
-gsap
-  .timeline({ default: { duration: 0.8, ease: "power2.out" } })
+gsap.timeline({ default: { duration: 0.8, ease: "power2.out", } })
   //제목을 제자리로 올리고 보이게 만든다
-  .to(".hero_title", { y: 0, opacity: 1 })
+  .to('.hero_title', { y: 0, opacity: 1 })
   //설명 문장을 제목보다 살짝 늦게 따라오게 한다
-  .to(".hero_sub", { y: 0, opacity: 1 }, "<0.12")
+  .to('.hero_sub', { y: 0, opacity: 1 }, '<0.12')
   //버튼도 같은 리듬으로 마지막에 등장
-  .to(".hero_cta", { y: 0, opacity: 1 }, "<0.12");
+  .to('.hero_cta', { y: 0, opacity: 1 }, '<0.12')
 
 //marquee는 같은 글자 줄을 여러개 복사해서 끝없이 흐르는 것처럼 보이게 한다
 function marquee() {
   //marquee_wrap을 전부 찾아 각각 독립적으로 흐르게 만든다
-  document.querySelectorAll(".marquee_wrap").forEach((wrap) => {
-    const row = wrap.querySelector(".marquee_row");
+  document.querySelectorAll('.marquee_wrap').forEach((wrap) => {
+    const row = wrap.querySelector('.marquee_row');
     //기준 줄이 없으면 복사할 것도 없으니 건너 띈다
     if (!row) return;
 
@@ -194,14 +188,14 @@ function marquee() {
       //기준 줄을 복사해서 wrapper 안에 추가
       wrap.appendChild(row.cloneNode(true));
     }
-    const rows = wrap.querySelectorAll(".marquee_row");
+    const rows = wrap.querySelectorAll('.marquee_row');
     //현재 가로 이동 위치를 저장
     let x = 0;
 
     //한 프레임마다 글자 줄을 조금씩 이동시키는 함수
     function step() {
       //reverse 클래스가 있으면 오른쪽, 없으면 왼쪽으로 움직임
-      const dir = wrap.classList.contains("reverse") ? 1 : -1;
+      const dir = wrap.classList.contains('reverse') ? 1 : -1;
       //방향에 맞춰 현재 위치를 1px씩 움직임
       x += dir;
 
@@ -211,10 +205,10 @@ function marquee() {
         let offset = x + index * rowWidth;
 
         //왼쪽으로 나가서 완전히 사라진 줄은 맨 오른쪽 뒤로 보낸다
-        if ((dir === -1) & (offset <= -rowWidth)) {
+        if (dir === -1 & offset <= -rowWidth) {
           offset += rowWidth * rows.length;
           //오른쪽으로 나가서 완전히 사라진 줄은 맨 왼쪽 앞으로 보낸다
-        } else if ((dir === 1) & (offset >= rowWidth)) {
+        } else if (dir === 1 & offset >= rowWidth) {
           offset -= rowWidth * rows.length;
         }
 
@@ -235,19 +229,19 @@ function marquee() {
 marquee();
 
 //프로젝트 카드가 화면에 들어오면 아래에서 위로 나타난다
-gsap.to(".feature_card", {
+gsap.to('.feature_card', {
   y: 0,
   opacity: 1,
   duration: 0.6,
   ease: "power2.out",
   stagger: 0.22,
   scrollTrigger: {
-    trigger: ".feature_list",
-    start: "top 55%",
+    trigger: '.feature_list',
+    start: 'top 55%',
     // - onEnter, onLeave, onEnterBack, and onLeaveBack
     //내려갈때 재생, 위로 벗어나면 다시 되감기
     toggleActions: "play reverse play reverse",
-  },
+  }
 });
 
 //문장을 단어 단위 span으로 쪼갠다
@@ -257,65 +251,61 @@ function splitWords(selector, wordClass) {
   document.querySelectorAll(selector).forEach((textEl) => {
     //textEl 요소 안의 텍스트를 가져와 앞뒤 공백을 제거한뒤에 공백 기준으로 나누어 배열로 만드는 코드
     const words = textEl.textContent.trim().split(/\s+/);
-    textEl.innerHTML = words
-      .map((word) => `<span class="${wordClass}">${word}</span>`)
-      .join(" ");
-  });
+    textEl.innerHTML = words.map((word) => `<span class="${wordClass}">${word}</span>`).join(' ')
+  })
 }
 
 //카드 제목의 strong 영역을 하나씩 처리
-document.querySelectorAll(".feature_card h3 strong").forEach((titEl) => {
-  const lines = titEl.querySelectorAll(".title_line");
+document.querySelectorAll('.feature_card h3 strong').forEach((titEl) => {
+  const lines = titEl.querySelectorAll('.title_line');
   lines.forEach((line) => {
     const words = line.textContent.trim().split(/\s+/);
-    line.innerHTML = words
-      .map((word) => `<span class="word">${word}</span>`)
-      .join(" ");
+    line.innerHTML = words.map((word) => `<span class="word">${word}</span>`).join(' ')
   });
 });
 //설명문장도 motion_word단어 span으로 나눔
-splitWords(".mtauto .motion_phrase", "motion_word");
+splitWords('.mtauto .motion_phrase', 'motion_word');
 
 //카드 큰 제목은 단어가 하나씩 차례로 등장
-gsap.from(".feature_card .word", {
+gsap.from('.feature_card .word', {
   y: 22,
   opacity: 0,
   ease: "power2.out",
   stagger: 0.08,
   duration: 0.8,
   scrollTrigger: {
-    trigger: ".feature_list",
-    start: "top 55%",
+    trigger: '.feature_list',
+    start: 'top 55%',
     // - onEnter, onLeave, onEnterBack, and onLeaveBack
     //내려갈때 재생, 위로 벗어나면 다시 되감기
     toggleActions: "play reverse play reverse",
-  },
+  }
 });
 
 //카드 설명 문장도 단어 단위로 살짝 늦게 따라오게 만든다
-gsap.from(".feature_card .motion_word", {
+gsap.from('.feature_card .motion_word', {
   y: 18,
   opacity: 0,
   ease: "power2.out",
   stagger: 0.035,
   duration: 0.7,
   scrollTrigger: {
-    trigger: ".feature_list",
-    start: "top 55%",
+    trigger: '.feature_list',
+    start: 'top 55%',
     // - onEnter, onLeave, onEnterBack, and onLeaveBack
     //내려갈때 재생, 위로 벗어나면 다시 되감기
     toggleActions: "play reverse play reverse",
-  },
+  }
 });
 
 //카드 위에 마우스를 올리면 빛이 따라다니는 것처럼 보이는 레이어를 만든다
-document.querySelectorAll(".feature_card").forEach((card) => {
-  const glass = document.createElement("div");
-  glass.className = "glass_reflect";
+document.querySelectorAll('.feature_card').forEach((card) => {
+  const glass = document.createElement('div');
+  glass.className = 'glass_reflect';
   card.appendChild(glass);
 
   //카드 위에서 마우스가 움직일때마다 빛 위치를 바꾼다
-  card.addEventListener("mousemove", (e) => {
+  card.addEventListener('mousemove', (e) => {
     //카드의 화면 위치와 크기를 가져온다
     const rect = card.getBoundingClientRect();
     //마우스 x좌표를 카드 안쪽 기준으로 바꾼다
@@ -331,22 +321,22 @@ document.querySelectorAll(".feature_card").forEach((card) => {
     `;
   });
 
-  card.addEventListener("mouseleave", () => {
-    glass.style.background = "transparent";
-  });
+  card.addEventListener('mouseleave', () => {
+    glass.style.background = 'transparent';
+  })
 });
 
 //카드 안쪽 레이어를 마우스 위치에 맞춰 살짝 기울인다
 //rotateX rotateY만 바꾸기
-document.querySelectorAll(".tit_card").forEach((card) => {
-  const layer = card.querySelector(".tit_layer");
+document.querySelectorAll('.tit_card').forEach((card) => {
+  const layer = card.querySelector('.tit_layer');
   //레이어가 없으면 이 카드는 건너뛴다
   if (!layer) return;
 
   //카드 위에서 마우스를 움직일때 기울기 값을 계산
-  card.addEventListener("mousemove", (e) => {
+  card.addEventListener('mousemove', (e) => {
     const rect = card.getBoundingClientRect();
-    //카드 안에서 마우스가 가로로 몇퍼센트 위치인지 계산
+    //카드안에서 마우스가 가로로 몇퍼센트 위치인지 계산
     const px = (e.clientX - rect.left) / rect.width;
     const py = (e.clientY - rect.top) / rect.height;
     //위아래 위치를 rotateX 각도로 바꾼다
@@ -356,40 +346,41 @@ document.querySelectorAll(".tit_card").forEach((card) => {
     //계산한 각도를 안쪽 레이어 transform에 적용
     layer.style.transform = `translateZ(0) rotateX(${rx}deg) rotateY(${ry}deg)`;
 
-    card.addEventListener("mouseleave", () => {
+    card.addEventListener('mouseleave', () => {
       layer.style.transform = `translateZ(0) rotateX(0deg) rotateY(0deg)`;
-    });
-  });
+    })
+  })
 });
+
 
 const stickyBox = document.querySelector('.sticky_box');
 const processCards = gsap.utils.toArray('.projects_all .card');
 
-processCards.forEach((card,index)=> {
+processCards.forEach((card, index) => {
   //카드 순서에 맞는 이미지 파일 경로를 만든다
-  const imgUrl = `asset/info${index+1}.png`;
+  const imgUrl = `asset/info${index + 1}.png`;
 
   //카드가 화면 중앙에 들어오는 순간 감지
   ScrollTrigger.create({
     trigger: card,
-    start:'top center',
-    end :'bottom center',
+    start: 'top center',
+    end: 'bottom center',
     onEnter:()=>changeBg(imgUrl),
-    onEnterBack:()=>changeBg(imgUrl)
+    onEnterBack:()=>changeBg(imgUrl),
   });
 })
 
-//sticky 박스의 이미지를 바로 바꾸면 딱딱해서 살짝 줄였다가 다시 키우며 교체
-function changeBg(imgUrl){
-  if(!stickyBox) return;
-  gsap.to(stickyBox,{
-    opacity:0.72,
+//sticky 박스의 이미지를 바로 바꾸면 딱닥해서 살짝 줄였다가 다시 키우며 교체
+function changeBg(imgUrl) {
+  if (!stickyBox) return;
+
+  gsap.to(stickyBox, {
+    opacity: 0.72,
     scale: 0.98,
-    duration:0.2,
-    onComplete: ()=>{
+    duration: 0.2,
+    onComplete: () => {
       stickyBox.style.backgroundImage = `url(${imgUrl})`;
-      gsap.to(stickyBox,{opacity:1, scale:1, duration:0.45});
+      gsap.to(stickyBox, { opacity: 1, scale: 1, duration: 0.45 });
     }
-  }
-  )
+  })
 }
