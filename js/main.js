@@ -365,8 +365,8 @@ processCards.forEach((card, index) => {
     trigger: card,
     start: 'top center',
     end: 'bottom center',
-    onEnter:()=>changeBg(imgUrl),
-    onEnterBack:()=>changeBg(imgUrl),
+    onEnter: () => changeBg(imgUrl),
+    onEnterBack: () => changeBg(imgUrl),
   });
 })
 
@@ -384,23 +384,23 @@ function changeBg(imgUrl) {
     }
   })
 }
-//처음 화면에 들어오기 전에 기본 sticky 이미지를 1번으로 세팅
-changeBg(`asset/info1.png`)
+//처음 화면에 들어오기 전 기본 sticky 이미지를 1번으로 세팅
+changeBg(`asset/info1.png`);
 
 const pinBg = document.getElementById('pin_bg');
 const photos = gsap.utils.toArray('.photo');
 
 //showcase 섹션은 화면을 고정한 상태에서 사진들이 차례대로 올라온다
 const pinTl = gsap.timeline({
-  scrollTrigger : {
-    trigger : '.pin_scene',
-    start : 'top top',
-    //1800px 스크롤하는 동안에 타임라인이 진행된다
-    end : '+=1800',
+  scrollTrigger: {
+    trigger: '.pin_scene',
+    start: 'top top',
+    //1800px 스크롤 하는 동안 타임라인이 진행된다
+    end: '+=1800',
     //섹션을 화면에 고정해서 사진이 올라오는 무대를 만든다
-    pin : true,
-    //스크롤 위치와 애니메이션 진행도를 연결
-    scrub : true,
+    pin: true,
+    // 스크롤 위치와 애니메이션 진행도를 연결
+    scrub: true,
     // pin이 시작될 때 생길 수 있는 튐을 줄인다.
     anticipatePin: 1,
     // 새로고침이나 리사이즈 때 값을 다시 계산한다.
@@ -411,37 +411,187 @@ const pinTl = gsap.timeline({
 });
 
 //배경 이미지를 살짝 흐리고 키워서 뒤로 밀리는 느낌을 만든다
-pinTl.to(pinBg, { filter:'blur(12px)', scale:1.06,duration:1, ease:'none'}, 0);
+pinTl.to(pinBg, { filter: 'blur(12px', scale: 1.06, duration: 1, ease: 'none' }, 0);
 
-//사진마다 살짝 다른 각도와 glitch 효과를 줘서 디자인 갤러리 처럼 겹쳐 보이게 한다
-photos.forEach((photo, index)=>{
-    //사진이 등장하기 직전에 레이어 순서와 giltch클래스 조정
-    pinTl.add(()=>{
-      //뒤에 나온 사지이 앞쪽에 쌓이도록 z-index올림
-      photo.style.zIndex = String(100+index);
-      photo.classList.add('glitch');
-      //0.4초 뒤 glitch클래스를 제거해 효과를 끝낸다
-      gsap.delayedCall(0.4, ()=>photo.classList.remove('glitch'));
-    }, index *0.22);
+//사진마다 살짝 다른 각도와 giltch 효과를 줘서 디자인 갤러리 처럼 겹쳐 보이게 한다
+photos.forEach((photo, index) => {
+  //사진이 등장하기 직전에 레이어 순서와 giltch클래스를 조정
+  pinTl.add(() => {
+    //뒤에 나온 사진이 앞쪽에 쌓이도록 z-index 올림
+    photo.style.zIndex = String(100 + index);
+    photo.classList.add('glitch');
+    //0.4초 뒤 glitch 클래스를 제거해 효과를 끝낸다
+    gsap.delayedCall(0.4, () => photo.classList.remove('glitch'));
+  }, index * 0.22);
 
-    //사진은 숨겨진 시작 상태에서 보이는 상태로 이동시킨다
-    pinTl.fromTo(photo, {
-      opacity:0,
-      y:1080,
-      scale:0.4,
-      filter:'blur(6px)',
-      rotate:(index % 2) ? 4 : -4,
-    }, {
-      opacity:1,
-      y:0,
-      scale:1,
-      filter:'blur(0px)',
-      rotate:(index % 2) ? 5 : -5,
-      duration:0.85,
-      //빠르게 올라온 뒤에 부드럽게 멈추게 한다
-      ease:'power3.out',
-    }, index *0.22)
-  });
+  //사진을 숨겨진 시작 상태에서 보이는 상태로 이동시킨다
+  pinTl.fromTo(photo, {
+    opacity: 0,
+    y: 1080,
+    scale: 0.4,
+    filter: 'blur(6px)',
+    rotate: (index % 2) ? 4 : -4,
+  }, {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    filter: 'blur(0px)',
+    rotate: (index % 2) ? 5 : -5,
+    duration: 0.85,
+    //빠르게 올라온 뒤 부드럽게 멈추게 한다
+    ease: 'power3.out',
+  }, index * 0.22)
+});
 
 // 사진 묶음 전체를 마지막에 조금 위로 올려 장면이 마무리되는 느낌을 준다.
 pinTl.to('.float_wrap', { yPercent: -6, duration: 0.8, ease: 'none' }, '>0.1');
+
+//가로 스크롤 섹션에서 실제로 옆으로 움직여야 되는 거리를 계산
+//track 전체 너비에서 화면에 이미 보이는 너비를 빼면 이동 거리만 남음
+function totalWidth() {
+  const wrap = document.querySelector('.horizontal_section');
+  const track = document.querySelector('.track');
+  // 필요한 요소가 없으면 이동 거리도 0으로 처리한다.
+  if (!wrap || !track) return 0;
+
+  // 전체 트랙 너비에서 현재 화면에 보이는 너비를 빼서 이동할 거리만 남긴다.
+  return Math.max(0, track.scrollWidth - wrap.clientWidth);
+}
+
+//horizontal_section은 세로 스크롤을 가로 이동으로 바궈 보여줌
+const horizontalTween = gsap.to('.track', {
+  //트랙을 왼쪽으로 이동시켜 오른쪽 카드들이 보이게 한다
+  x: () => -totalWidth(),
+  ease: 'none',
+  scrollTrigger: {
+    trigger: '.horizontal_section',
+    start: 'top top',
+    //실제 이동 거리보다 더 길게 잡아 앞뒤 여백 스크롤을 만든다
+    end: () => '+=' + (totalWidth() + window.innerWidth * 1.45),
+    scrub: true,
+    pin: true,
+    // pin 시작 튐을 줄인다.
+    anticipatePin: 1,
+    // 리사이즈 때 이동 거리를 다시 계산한다.
+    invalidateOnRefresh: true,
+    // 내려갈 때만 진행하고 역방향 상태는 scrub이 처리한다.
+    toggleActions: 'play none none reset',
+  }
+});
+
+// 케이스 이미지가 모두 같은 방식으로 나오면 지루해서, 여러 등장 방식을 돌려쓴다.
+const imageMotionPresets = [
+  {
+    x: 0,
+    y: 96,
+    scale: 0.86,
+    rotate: -8,
+    filter: 'blur(10px)',
+    duration: 0.9,
+    ease: 'power3.out',
+  },
+  {
+    x: 120,
+    y: 34,
+    scale: 0.92,
+    rotate: 9,
+    filter: 'blur(8px)',
+    duration: 1,
+    ease: 'back.out(1.25)',
+  },
+  {
+    x: -96,
+    y: 70,
+    scale: 1.08,
+    rotate: -12,
+    filter: 'blur(12px)',
+    duration: 0.95,
+    ease: 'power2.out',
+  },
+  {
+    x: 24,
+    y: -76,
+    scale: 0.9,
+    rotate: 11,
+    filter: 'blur(14px)',
+    duration: 1.05,
+    ease: 'expo.out',
+  },
+];
+const imageMotionOffset = Math.floor(Math.random() * imageMotionPresets.length);
+
+
+//각 case_panel 안에서 텍스트는 순서대로, 이미지는 서로 다른 방향에서 등장
+document.querySelectorAll('.case_panel').forEach((article, articleIndex) => {
+  const copyItems = article.querySelectorAll('.case_kicker,.case_copy h2,.case_copy p,.case_meta li');
+  const caseImages = article.querySelectorAll('.case_image');
+  //텍스트 요소들을 아래에서 위로 순서대로 등장 시킨다
+  gsap.fromTo(copyItems, {
+    y: 36,
+    opacity: 0,
+  }, {
+    y: 0,
+    opacity: 1,
+    stagger: 0.08,
+    duration: 0.8,
+    ease: 'power2.out',
+    scrollTrigger: {
+      // 현재 아티클을 기준으로 등장 타이밍을 잡는다.
+      trigger: article,
+      // 가로 스크롤 애니메이션 안에서 위치를 계산한다.
+      containerAnimation: horizontalTween,
+      // 패널 왼쪽이 화면 70% 지점에 오면 시작한다.
+      start: 'left 70%',
+      // 다시 왼쪽으로 벗어나면 되감기만 한다.
+      toggleActions: 'play none none reverse',
+    },
+  })
+
+  //패널안의 이미지들을 하나씩 다른 preset으로 등장
+  caseImages.forEach((caseImage, imageIndex) => {
+    // 랜덤 시작점과 패널/이미지 순서를 섞어 사용할 preset 번호를 만든다.
+    const presetIndex = (imageMotionOffset + articleIndex + imageIndex) % imageMotionPresets.length;
+    // 실제로 적용할 모션 preset을 꺼낸다.
+    const preset = imageMotionPresets[presetIndex];
+    // CSS에 이미 잡힌 기본 회전값을 읽어둔다.
+    const baseRotate = parseFloat(gsap.getProperty(caseImage, 'rotate')) || 0;
+    gsap.fromTo(caseImage, {
+      x: preset.x,
+      y: preset.y,
+      opacity: 0,
+      scale: preset.scale,
+      rotate: baseRotate + preset.rotate,
+      filter: preset.filter,
+    }, {
+      // 최종 x 위치는 원래 자리다.
+      x: 0,
+      // 최종 y 위치는 원래 자리다.
+      y: 0,
+      // 최종 상태는 완전히 보이게 한다.
+      opacity: 1,
+      // 최종 크기는 원래 크기다.
+      scale: 1,
+      // 최종 회전은 CSS 기본 회전값으로 돌아간다.
+      rotate: baseRotate,
+      // 최종 상태에서는 blur를 지운다.
+      filter: 'blur(0px)',
+      // 같은 패널 안에서도 이미지마다 조금씩 늦게 나온다.
+      delay: imageIndex * 0.08,
+      // preset마다 다른 등장 시간을 사용한다.
+      duration: preset.duration,
+      // preset마다 다른 easing을 사용한다.
+      ease: preset.ease,
+      scrollTrigger: {
+        // 현재 패널을 기준으로 이미지 등장 타이밍을 잡는다.
+        trigger: article,
+        // 가로 스크롤 애니메이션 안에서 위치를 계산한다.
+        containerAnimation: horizontalTween,
+        // 이미지 순서가 뒤로 갈수록 조금 더 늦게 시작한다.
+        start: `left ${70 - imageIndex * 6}%`,
+        // 뒤로 스크롤하면 이미지를 다시 숨긴다.
+        toggleActions: 'play none none reverse',
+      },
+    })
+
+  })
+})
